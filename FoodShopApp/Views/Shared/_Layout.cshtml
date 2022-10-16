@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="~/css/site.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet">    
+    @*bootstrap icon cdn*@
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+
+</head>
+<body>
+    <div class="container-fluid mt-0">
+        <div class="row flex-nowrap">
+            <partial name="_header"></partial>
+            
+            <div class="col py-3">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+    <hr />
+    <footer class="align-items-center text-center">
+        <p>&copy; @DateTime.Now.Year - Copyright Food Corner</p>
+        <p>All Rights are reserved.</p>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required:false)
+    </body>
+</html>

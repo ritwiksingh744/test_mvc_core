@@ -1,0 +1,275 @@
+﻿@using FoodShopApp.Controllers
+@model ViewModel1
+@{
+    ViewData["Title"] = "Index"; 
+    IEnumerable<FoodShopApp.Models.Category> Category = Model.Category;
+}
+
+<h2>Product</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Index" asp-controller="Product" method="get">
+            <div class="d-inline-flex align-items-center">
+                    <span>Show:</span>
+                    <select name="pageSize" class="form-select" id="selectItem" value="@Model.pageSize">
+                        <option class="text-bg-info" value=@Model.pageSize>@Model.pageSize</option>
+                        <option value=5>5</option>
+                        <option value=10>10</option>
+                        <option value=20>20</option>
+                        <option value=30>30</option>
+                    </select>
+                    <span>Entries</span> 
+                </div>
+        </form>
+    </div>
+
+    <div class="d-flex align-items-center justify-content-end mb-1 col-md-8">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalBody">
+            Add
+        </button>
+        <p class="ms-3">
+            <form asp-action="Index" asp-controller="Product" method="get">
+                    <input type="hidden" name="pageSize" value="@Model.pageSize" />
+                <input type="text" id="searchString" name="searchString"  value="@Model.currentFilter"/>
+                <button type="submit" class="ps-2 pe-2"><i class="bi bi-search"></i></button>
+            </form>
+        </p>
+
+        <!-- Modal -->
+        <div class="modal fade" id="modalBody" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-success bg-opacity-25">
+                        <h5 class="modal-title text-white" id="exampleModalLabel">Add Product</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <form id="myForm" asp-action="Index" asp-controller="Product" method="post">
+                            <div class="modal-body row-g-2">
+
+                                <div class="col-md-8">
+                                    <label for="ProductName" class="form-label">Product Name</label>
+                                    <input type="text" class="form-control" name="ProductName">
+                                </div>
+                                <div class="col-md-8">
+                                    <label for="ExpiryDate" class="form-label">Expiry Date</label>
+                                    <input type="date" class="form-control" name="ExpiryDate">
+                                </div>
+                                <div class="col-md-8  mt-3">
+                                    <label for="Type" class="form-label">Type</label>
+                                    <select name="Type" class = "form-select">
+                                        <option value="">Select Type</option>
+                                        <option value="Veg">Veg</option>
+                                        <option value="NonVeg">NonVeg</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-8 d-none">
+                                    <label for="CreatedOn" class="form-label">CreatedOn</label>
+                                    <input type="datetime" class="form-control" name="CreatedOn" value="@DateTime.Now" />
+                                </div>
+                                <div class="col-md-8  mt-2">
+                                    <label for="CategoryId" class="form-label">Category Type</label>
+                                    <select name="CategoryId" id="CategoryId" class = "form-select">
+                                        <option>Select Category</option>
+                                        @foreach(var item in Category){
+                                            <option value=@item.CategoryId>@item.CategoryName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-success bg-opacity-25">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-success">Save</button>
+                            </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<table class="table table-striped">
+    <tr>
+        <th>
+            <a asp-action="Index" asp-controller="Product" asp-route-sortOrder="@Model.nameSortParm" asp-route-searchString="@Model.currentFilter" class="text-decoration-none text-black">ProductName↕</a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-controller="Product" asp-route-sortOrder="@Model.expDateSortParm" asp-route-searchString="@Model.currentFilter" class="text-decoration-none text-black">ExpiryDate↕</a>
+        </th>
+        <th>
+            Type
+        </th>
+        <th>
+            Category
+        </th>
+
+        <th>
+            <a asp-action="Index" asp-controller="Product" asp-route-sortOrder="@Model.createDateSortParm" asp-route-searchString="@Model.currentFilter" class="text-decoration-none text-black">CreatedOn↕</a>
+        </th>
+        <th>
+            UpdatedOn
+        </th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Product)
+    {
+        if (item.ExpiryDate.Date >= DateTime.Now.Date)
+        {
+                    <tr id="row_@item.ProductId">
+                        <td>
+                            @item.ProductName
+                        </td>
+                        <td>
+                            @item.ExpiryDate
+                        </td>
+                        <td>
+                            @item.Type
+                        </td>
+                        <td>
+                            @item.Category.CategoryName
+                        </td>
+                        <td>
+                            @item.CreatedOn
+                        </td>
+                        <td>
+                            @item.UpdatedOn
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-controller="Product" asp-route-ProductId=@item.ProductId class = "btn btn-warning">Edit</a>
+                            <a class="btn btn-danger" onclick="Delete(@item.ProductId)">Delete</a>
+                        </td>
+                    </tr>
+        }
+        else
+        {
+                    <tr id="row_@item.ProductId" class="text-danger">
+                        <td>
+                            @item.ProductName
+                        </td>
+                        <td>
+                            @item.ExpiryDate
+                        </td>
+                        <td>
+                            @item.Type
+                        </td>
+                        <td>
+                            @item.Category.CategoryName
+                        </td>
+                        <td>
+                            @item.CreatedOn
+                        </td>
+                        <td>
+                            @item.UpdatedOn
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-controller="Product" asp-route-ProductId=@item.ProductId class = "btn btn-warning">Edit</a>
+                            <a class="btn btn-danger" onclick="Delete(@item.ProductId)">Delete</a>
+                        </td>
+                    </tr>
+        }
+    }
+</table>
+<hr />
+<!--pageNo button-->
+<div class="container text-center">
+    Page No.
+    @for (int i = 1; i <= Model.totalPage; i++)
+    {
+        string name = i.ToString();
+            <a asp-action="Index" asp-controller="Product" asp-route-pageNo=@i asp-route-pageSize=@Model.pageSize asp-route-searchString="@Model.currentFilter" asp-route-sortOrder="@Model.currentSortOrder" class="btn bg-dark border-1 bg-opacity-25 ms-1">@name</a>
+    }
+</div>
+
+<input type="hidden" id="hiddenProductId" />
+
+<input type="hidden" id="hiddenSortOrder" value="@Model.currentSortOrder" />
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Do you really want to delete?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" data-bs-dismiss="modal" id="confirmDelete" class="btn btn-primary">Ok</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+<script>
+    $(function () {
+
+        $("#myForm").validate({
+            rules: {
+                ProductName: {
+                    required: true,
+                    minlength: 2
+                },
+                ExpiryDate: {
+                    required: true
+                },
+                Type: {
+                    required:true
+                },
+                CategoryId: {
+                    required: true
+                }
+            },
+            messages: {
+                ProductName: {
+                    required: "Please enter Product Name.",
+                    minlength: "Category must be at least 2 characters."
+                },
+                ExpiryDate: {
+                    required: "Please select Expiry Date."
+                },
+                Type: {
+                    required: "Please select Product type."
+                },
+                CategoryId: {
+                    required: "Please select a categtory."
+                }
+            }
+        });
+    });
+    function Delete(ProductId) {
+        $("#hiddenProductId").val(ProductId);
+        $("#deleteModal").modal("show");
+    }
+    $("#confirmDelete").click(() => {
+        var id = $("#hiddenProductId").val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("Delete","Product")',
+            data: { ProductId: id },
+            success: function (response) {
+                $("#row_" + id).remove();
+                $("#deleteModal").modal("hide");
+            }
+        });
+    });
+
+    //pageSize dropdown
+    $("#selectItem").change(() => {
+        $.ajax({
+            type: 'GET',
+            url: '/Product/Index',
+            data: { pageSize: $("#selectItem").val(), searchString: $("#searchString").val(), sortOrder: $("#hiddenSortOrder").val() },
+            success: function (response) {
+                $("body").html(response);
+            }
+        });
+    });
+</script>
+}

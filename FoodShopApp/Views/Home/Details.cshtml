@@ -1,0 +1,64 @@
+﻿@model FoodShopApp.Models.Category
+@{
+    ViewData["Title"] = "Details";
+    IEnumerable<FoodShopApp.Models.Product> Products = ViewData["Product"] as IEnumerable<FoodShopApp.Models.Product>;
+}
+
+<div>
+    <h4>Category</h4>
+    <hr />
+    <dl class="dl-horizontal">
+         <dt>
+            CategoryName
+        </dt>
+
+        <dd>
+            @Model.CategoryName
+        </dd>
+
+        <dt>
+            CreatedOn
+        </dt>
+
+        <dd>
+            @Model.CreatedOn
+        </dd>
+
+        <dt>
+            UpdatedOn
+        </dt>
+
+        <dd>
+            @Model.UpdatedOn
+        </dd>
+    </dl>
+    <hr />
+    <h3>Products:</h3>
+    <ul>
+
+        @if (Products.Count() > 0)
+        {
+            foreach (var product in Products)
+            {
+                if (product.ExpiryDate.Date >= DateTime.Now.Date)
+                {
+                     <li >@product.ProductName</li>
+                }
+                else
+                {
+                     <li class="text-danger">@product.ProductName</li>
+                }
+            }
+        }
+        else
+        {
+            <li>No product Available</li>
+        }
+    </ul>
+</div>
+
+<p class="d-inline-flex">
+    <a asp-action="Edit" asp-controller="Home" asp-route-CategoryId=@Model.CategoryId class="btn btn-success">Edit</a>
+    <a asp-action="Index" asp-controller="Home" class="btn btn-warning ms-2">Back</a>
+</p>
+

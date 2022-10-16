@@ -1,0 +1,179 @@
+﻿@using FoodShopApp.Controllers
+@model ViewModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2 class="text-black-50">Category</h2>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Index" asp-controller="Home" method="get">
+            <div class="d-inline-flex align-items-center">
+                <span>Show:</span>
+                <select name="pageSize" class="form-select" id="selectItem" value="@Model.pageSize">
+                    <option class="text-bg-info" value=@Model.pageSize>@Model.pageSize</option>
+                    <option value=5>5</option>
+                    <option value=10>10</option>
+                    <option value=20>20</option>
+                    <option value=30>30</option>
+                </select>
+                <span>Entries</span>
+             </div>
+        </form>
+    </div>
+    <div class="d-flex align-items-center justify-content-end mb-1 col-md-8">
+        <button type="button" class="btn  bg-primary bg-opacity-75 text-white" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Create
+        </button>
+        <p class="ms-3">
+            <form asp-action="Index" asp-controller="Home" method="get">
+                   <input type="hidden" name="pageSize" value="@Model.pageSize"/>
+                <input type="text" id="searchString" name="searchString"  value="@Model.currentFilter"/>
+                <button type="submit" class="ps-2 pe-2"><i class="bi bi-search"></i></button>
+            </form>
+        </p>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="myForm" asp-action="Index" asp-controller="Home" method="post">
+                        <div class="modal-body">
+
+                            <div class="col-md-4">
+                                <label for="CategoryName" class="form-label">Category Name</label>
+                                <input type="text" class="form-control" id="CategoryName" name="CategoryName" />
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary bg-opacity-50" id="btnAdd">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<table class="table table-striped table-hover" id="myTable">
+    <tr>
+        <th>
+            <a asp-action="Index" asp-controller="Home" asp-route-sortOrder="@Model.nameSortParm" asp-route-searchString="@Model.currentFilter" class = "text-decoration-none text-black">CategoryName↕</a>
+        </th>
+        <th>
+            <a asp-action="Index" asp-controller="Home" asp-route-sortOrder="@Model.dateSortParm" asp-route-seachString="@Model.currentFilter" class = "text-decoration-none text-black">CreatedOn↕</a>
+        </th>
+        <th>UpdatedOn</th>
+
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Category)
+    {
+                <tr id="row_@item.CategoryId">
+                    <td>
+                @item.CategoryName
+                    </td>
+                    <td>
+                @item.CreatedOn
+                    </td>
+                    <td>
+                @item.UpdatedOn
+                    </td>
+
+                    <td>
+                        <a asp-action="Edit" asp-controller="Home" asp-route-CategoryId=@item.CategoryId class="btn btn-warning">Edit</a>
+                    <a asp-action="Details" asp-controller="Home" asp-route-CategoryId=@item.CategoryId  class="btn btn-success">Details</a>
+                        <a class="btn btn-danger" onclick="Delete(@item.CategoryId)">Delete</a>
+                    </td>
+                </tr>
+    }
+</table>
+<hr />
+<div class="container text-center">
+    Page No.
+    @for (int i = 1; i <= Model.totalPage; i++)
+    {
+        string name = i.ToString();
+            <a asp-action="Index" asp-controller="Home" asp-route-pageNo=@i asp-route-pageSize=@Model.pageSize asp-route-searchString="@Model.currentFilter" asp-route-sortOrder="@Model.currentSortOrder" class = "btn bg-dark border-1 bg-opacity-25 ms-1">@name</a>
+    }
+</div>
+    <input type="hidden" id="hiddenCategoryId" />
+
+    <input type="hidden" id="hiddenSortOrder" value="@Model.currentSortOrder" />
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Confirm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Do you really want to delete?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" data-bs-dismiss="modal" id="confirmDelete" class="btn btn-primary">Ok</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@section Scripts{
+    <script>
+        $(function () {
+            $("#myForm").validate({
+                rules: {
+                        CategoryName: {
+                        required: true,
+                        minlength: 2
+                    }
+                },
+                messages: {
+                        CategoryName: {
+                        required: "Please enter Category Name",
+                        minlength: "Category must be at least 2 characters"
+                    }
+                }
+            });
+        });
+    function Delete(CategoryId) {
+
+        $("#hiddenCategoryId").val(CategoryId);
+        $("#deleteModal").modal("show");
+    }
+    $("#confirmDelete").click(() => {
+        var id = $("#hiddenCategoryId").val();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("Delete","Home")',
+            data: { CategoryId: id },
+            success: function (response) {
+                $("#row_" + id).remove();
+                $("#deleteModal").modal("hide");
+            }
+        });
+
+    });
+
+    //pageSize dropdown
+    $("#selectItem").change(() => {
+        $.ajax({
+            type: 'GET',
+            url: '/Home/Index',
+            data: { pageSize: $("#selectItem").val(), searchString: $("#searchString").val(), sortOrder: $("#hiddenSortOrder").val() },
+            success: function (response) {
+                $("body").html(response);
+            }
+        });
+    });
+    </script>
+}

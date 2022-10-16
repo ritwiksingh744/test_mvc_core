@@ -1,0 +1,65 @@
+﻿@model FoodShopApp.Models.Product
+
+@{
+    ViewData["Title"] = "Edit";
+    IEnumerable<FoodShopApp.Models.Category> Category = ViewData["Category"] as IEnumerable<FoodShopApp.Models.Category>;
+}
+
+
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="ProductId" class="form-control" />
+            <div class="form-group">
+                <label asp-for="ProductName" class="control-label"></label>
+                <input asp-for="ProductName" class="form-control" />
+                <span asp-validation-for="ProductName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ExpiryDate" class="control-label"></label>
+                <input asp-for="ExpiryDate" class="form-control" />
+                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Type" class="control-label"></label>
+                <select asp-for="Type" class="form-control">
+                    <option value="Veg">Veg</option>
+                    <option value="NonVeg">NonVeg</option>
+                </select>
+                <span asp-validation-for="Type" class="text-danger"></span>
+            </div>
+
+                <input type="hidden" asp-for="CreatedOn" class="form-control" />
+
+            
+                <input type="hidden" asp-for="UpdatedOn" class="form-control" />
+
+                <input type="hidden" class="form-check-input" asp-for="IsDeleted" /> 
+            
+                <div class="form-group">
+                <label asp-for="CategoryId" class="control-label"></label>
+                <select asp-for="CategoryId" class="form-control" >
+                    @foreach(var item in Category){
+                        <option value=@item.CategoryId>@item.CategoryName</option>
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group d-inline-flex align-items-center mt-3">
+                <div>
+                    <input type="submit" value="Save" class="btn btn-success" />
+                </div>
+                <div>
+                    <a asp-action="Index" asp-controller="Product" class="btn btn-warning ms-2">Back</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
